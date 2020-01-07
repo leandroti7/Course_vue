@@ -7,10 +7,32 @@
     <title>My books</title>
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="node_modules/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
  <div class="container" id="hello">
-     <h1>{{ msg }}</h1>
+    <div class="row">
+        <h1>{{ msg }}</h1>
+        <input type="text" class="form-control" v-model="msg">
+    </div>
+    <div class="row">
+        <h1>My list</h1>
+        <ul>
+            <li v-for="people in peoples">
+                {{people.name}}
+            </li>
+        </ul>
+    </div>
+    <div class="row">
+        <input type="text" class="form-control" v-model="newElement" v-on:keyup.enter="addElement">
+        <h1>My list Element</h1>
+        <ul>
+            <li v-for="element in elements">
+                {{ element.title }}
+                <a href="#" v-on:click="removeElement($event,$index)">X</a>
+            </li>
+        </ul>
+    </div>
  </div>  
 <script src="node_modules/vue/dist/vue.js"></script>
 <script src="node_modules/vue-resource/dist/vue-resource.js"></script>
