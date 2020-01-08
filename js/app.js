@@ -10,7 +10,18 @@ var hello = new Vue({
             {name:"EU mesmo"}
         ],
         newElement:'',
-        elements: []
+        elements: [],
+        objectA:{
+            'font-size':'30px'
+        },
+        objectB:{
+            color:"red"
+        },
+        myListForm: [],
+        myForm:{
+            name:'',
+            email:''
+        }
     },
     methods:{
         addElement: function(e){
@@ -23,6 +34,11 @@ var hello = new Vue({
         removeElement: function(e, index) {
             e.preventDefault();
             this.elements.splice(index, 1);
+        },
+        addForm: function (){
+            this.myListForm.push({name: this.myForm.name, email: this.myForm.email});
+            this.myForm.name = "";
+            this.myForm.email = "";
         }
     }
 });

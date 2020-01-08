@@ -33,6 +33,23 @@
             </li>
         </ul>
     </div>
+    <div class="row">
+        <h1>v-bind</h1>
+        <p v-bind:class=" { 'text-danger':1 === 1 } ">Leandro</p>
+        <p :class=" { 'text-info':1 === 1 } ">Souza</p>
+        <p :style=" [objectA, objectB] ">Silva</p>
+    </div>
+    <div class="row">
+        <h1>v-model</h1>
+        <ul>
+            <li v-for="myList in myListForm">
+                {{ myList.name }} - {{ myList.email }}
+            </li>
+        </ul>
+        <input type="text" class="form-control" v-model="myForm.name" placeholder="Name">
+        <input type="text" class="form-control" v-model="myForm.email" placeholder="Email">
+        <button @click="addForm">Add</button>
+    </div>
  </div>  
 <script src="node_modules/vue/dist/vue.js"></script>
 <script src="node_modules/vue-resource/dist/vue-resource.js"></script>
