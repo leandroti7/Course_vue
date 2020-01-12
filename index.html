@@ -6,50 +6,37 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>My books</title>
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css">
-    <link rel="stylesheet" href="node_modules/font-awesome/css/font-awesome.css">
+    <!-- <link rel="stylesheet" href="node_modules/font-awesome/css/font-awesome.css"> -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
- <div class="container" id="hello">
-    <div class="row">
-        <h1>{{ msg }}</h1>
-        <input type="text" class="form-control" v-model="msg">
-    </div>
-    <div class="row">
-        <h1>My list</h1>
-        <ul>
-            <li v-for="people in peoples">
-                {{people.name}}
-            </li>
-        </ul>
-    </div>
-    <div class="row">
-        <input type="text" class="form-control" v-model="newElement" v-on:keyup.enter="addElement">
-        <h1>My list Element</h1>
-        <ul>
-            <li v-for="element in elements">
-                {{ element.title }}
-                <a href="#" v-on:click="removeElement($event,$index)">X</a>
-            </li>
-        </ul>
-    </div>
-    <div class="row">
-        <h1>v-bind</h1>
-        <p v-bind:class=" { 'text-danger':1 === 1 } ">Leandro</p>
-        <p :class=" { 'text-info':1 === 1 } ">Souza</p>
-        <p :style=" [objectA, objectB] ">Silva</p>
-    </div>
-    <div class="row">
-        <h1>v-model</h1>
-        <ul>
-            <li v-for="myList in myListForm">
-                {{ myList.name }} - {{ myList.email }}
-            </li>
-        </ul>
-        <input type="text" class="form-control" v-model="myForm.name" placeholder="Name">
-        <input type="text" class="form-control" v-model="myForm.email" placeholder="Email">
-        <button @click="addForm">Add</button>
-    </div>
+ <div class="container" id="app">
+     <div class="row">
+        <h1>Books</h1>
+        <div class="well">
+            <input type="search" v-model="mySearch" class="form-control" placeholder="Search">
+        </div>
+     </div>
+     <div class="row">
+         <table class="table">
+             <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Title</th>
+                    <th>Value</th>
+                    <th>Description</th>
+                </tr>
+             </thead>
+             <tbody>
+                 <tr v-for="book in books">
+                    <td>{{ book.id }}</td>
+                    <td>{{ book.title }}</td>
+                    <td>{{ book.value }}</td>
+                    <td>{{ book.description }}</td>
+                 </tr>
+             </tbody>
+         </table>
+     </div>
  </div>  
 <script src="node_modules/vue/dist/vue.js"></script>
 <script src="node_modules/vue-resource/dist/vue-resource.js"></script>
