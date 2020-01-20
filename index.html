@@ -11,55 +11,78 @@
 </head>
 <body>
  <div class="container" id="app">
-     <div class="row">
-         <h3>Campeonato Brasileiro - Série A - 2018</h3>
-     </div>
-     <div class="row">
+    <div class="row">
+        <h1 class="=title">Campeonato Brasileiro - Série A - 2018</h1>
+    </div>
+    <div class="row">
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <button class="btn btn-warning mb-2 " @click="criarJogo">Criar Novo Jogo</button>
             </div>
         </div>
-       <form  class="form-inline">
-            <img :src="novoJogo.casa.time ? novoJogo.casa.time.escudo: ''" class="img-responsive mr-3" alt="">
-            <h3>{{ novoJogo.casa.time ? novoJogo.casa.time.nome: '' }}</h3>
-            <input type="text" class="form-control mr-3 ml-3 mb-5 mt-5" v-model="novoJogo.casa.gols">
-            X
-            <input type="text" class="form-control mr-3 ml-3 mb-5 mt-5" v-model="novoJogo.fora.gols">
-            <img :src="novoJogo.fora.time ? novoJogo.fora.time.escudo: ''" class="img-responsive mr-3" alt="">
-            <h3>{{ novoJogo.fora.time ? novoJogo.fora.time.nome: '' }}</h3>
-            <div class="row col-md-12 mt-5 mb-5">
-                <button type="button" class="btn btn-primary" @click="fimJogo">Fim de jogo</button>
-            </div>
-       </form>
-     </div>
-     <table class="table table-striped">
-         <thead>
-             <tr>
-                 <th>Nome</th>
-                 <th>Pontos</th>
-                 <th>GM</th>
-                 <th>GS</th>
-                 <th>Saldo</th>
-             </tr>
-         </thead>
-         <tbody>
-             <tr v-for="time in times">
-                 <td>
-                    <img :src="time.escudo" class="img-responsive" alt="">
-                    {{ time.nome }}
-                 </td>
-                 <td>{{ time.pontos }}</td>
-                 <td>{{ time.gm }}</td>
-                 <td>{{ time.gs }}</td>
-                 <td></td>
-             </tr>
-         </tbody>
-     </table>
-     <input type="text" v-model="gols">
+    </div>
+    <div class="row">
+        <input type="text" class="form-control" v-model="busca">
+    </div>
+    <div class="row">
+        <div class="col-md-12" v-if="visao!='tabela'">
+            <form class="form-inline">
+                <img :src="novoJogo.casa.time ? novoJogo.casa.time.escudo: ''" class="img-responsive mr-3" alt="">
+                <h3>{{ novoJogo.casa.time ? novoJogo.casa.time.nome: '' }}</h3>
+                <input type="text" class="form-control mr-3 ml-3 mb-5 mt-5" v-model="novoJogo.casa.gols">
+                X
+                <input type="text" class="form-control mr-3 ml-3 mb-5 mt-5" v-model="novoJogo.fora.gols">
+                <img :src="novoJogo.fora.time ? novoJogo.fora.time.escudo: ''" class="img-responsive mr-3" alt="">
+                <h3>{{ novoJogo.fora.time ? novoJogo.fora.time.nome: '' }}</h3>
+                <div class="row col-md-12 mt-5 mb-5">
+                    <button type="button" class="btn btn-primary" @click="fimJogo">Fim de jogo</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-12" v-if="visao=='tabela'">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th v-for="(coluna, indice) in ordem.colunas">
+                            <a href="#" @click.prevent="ordenar(indice)">{{ coluna | maiuscula }}</a>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="time in timesFiltrados">
+                        <td>
+                            <img :src="time.escudo" class="img-responsive" alt="">
+                            {{ time.nome | maiuscula}}
+                        </td>
+                        <td>{{ time.pontos }}</td>
+                        <td>{{ time.gm }}</td>
+                        <td>{{ time.gs }}</td>
+                        <td>{{ time.saldo }}</td>
+                        <!-- <td>{{ time | saldo }}</td> -->
+                    </tr>
+                </tbody>
+            </table>
+            <h3>Times classificados para libertadores</h3>
+            <ul>
+                <li v-for="time in timesLibertadores">
+                    <img :src="time.escudo" class="=escudo" alt="">
+                    {{ time.nome | maiuscula }}
+                </li>
+            </ul>
+            <h3 class="title">Times classificados para libertadores</h3>
+            <ul>
+                <li v-for="time in timesLibertadores">
+                    <img :src="time.escudo" class="=escudo" alt="">
+                    {{ time.nome | maiuscula }}
+                </li>
+            </ul>
+        </div>
+    </div>
  </div>
 <script src="node_modules/vue/dist/vue.js"></script>
 <script src="node_modules/vue-resource/dist/vue-resource.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js"></script>
 <script src="js/app.js"></script>
 <script>
     class Time {
@@ -69,19 +92,21 @@
             this.pontos = 0;
             this.gm = 0;
             this.gs = 0;
+            this.saldo = 0;
         }
 
         fimJogo(timeVisitante, golsMarcados, golSofridos){
             if (this.foiEmpate(golsMarcados,golSofridos)) {
                 this.empate(golsMarcados,golSofridos);
                 timeVisitante.empate(golsMarcados,golSofridos);
+                return;
             }
             if (this.foiVitoria(golsMarcados,golSofridos)) {
                 this.vitoria(golsMarcados, golSofridos);
                 timeVisitante.derrota(golSofridos, golsMarcados);
             } else{
                 this.derrota(golsMarcados, golSofridos);
-                timeVisitante.vitoria(golsMarcados, golSofridos);
+                timeVisitante.vitoria(golSofridos, golsMarcados);
 
             }
         }
@@ -109,23 +134,29 @@
             this.pontos += pontos;
             this.gm += golsMarcados;
             this.gs += golSofridos;
+            this.saldo += this.gm - this.gs;
         }
     }
     var app = new Vue({
         el: '#app',
         data: {
             gols: '4',
+            busca: '',
+            ordem: {
+                ordenacao: ['desc','desc','asc','desc'],
+                colunas: ['pontos','gm','gs', 'saldo']
+            },
             times: [
-                new Time('América MG', 'assets/america_mg_60x60.png'),
+                new Time('américa MG', 'assets/america_mg_60x60.png'),
                 new Time('Corinthians', 'assets/corinthians_60x60.png'),
-                new Time('Flamengo', 'assets/flamengo_60x60.png'),
+                new Time('flamengo', 'assets/flamengo_60x60.png'),
                 new Time('Palmeiras', 'assets/palmeiras_60x60.png'),
                 new Time('Sport', 'assets/sport_60x60.png'),
                 new Time('Botafogo', 'assets/botafogo_60x60.png'),
                 new Time('Grêmio', 'assets/gremio_60x60.png'),
-                new Time('Vasco', 'assets/vasco_60x60.png'),
+                new Time('vasco', 'assets/vasco_60x60.png'),
                 new Time('Chapecoense', 'assets/chapecoense_60x60.png'),
-                new Time('Bahia', 'assets/bahia_60x60.png'),
+                new Time('bahia', 'assets/bahia_60x60.png'),
                 new Time('Vitória', 'assets/vitoria_60x60.png'),
                 new Time('São Paulo', 'assets/sao_paulo_60x60.png'),
                 new Time('Parana', 'assets/parana_60x60.png'),
@@ -146,6 +177,23 @@
                     time: null,
                     gols: 0
                 }
+            },
+            visao: 'tabela'
+        },
+        computed: {
+            timesLibertadores(){
+                return this.times.slice(0,6)
+            },
+            timesRebaixados(){
+                return this.times.slice(16,20)
+            },
+            timesFiltrados(){
+                let times =  _.orderBy(this.times, this.ordem.colunas, this.ordem.ordenacao)
+                let self = this;
+                return _.filter(times, function (time) {
+                    let busca = self.busca.toLowerCase();
+                    return time.nome.toLowerCase().indexOf(busca) >= 0;  
+                })
             }
         },
         methods: {
@@ -162,7 +210,11 @@
                 this.novoJogo.casa.time = this.times[iCasa];
                 this.novoJogo.casa.gols = 0;
                 this.novoJogo.fora.time = this.times[iFora];
-                this.novoJogo.fora.gols = 0;                
+                this.novoJogo.fora.gols = 0;
+                this.visao = 'placar';        
+            },
+            ordenar(indice) {
+                this.$set(this.ordem.ordenacao, indice, this.ordem.ordenacao[indice] == 'desc'? 'asc':'desc')  
             },
             fimJogo(){
                 let golsMarcados = parseInt(this.novoJogo.casa.gols);
@@ -170,6 +222,15 @@
                 let timeFora = this.novoJogo.fora.time;
                 let timeCasa = this.novoJogo.casa.time;
                 timeCasa.fimJogo(timeFora, golsMarcados, golSofridos);
+                this.visao = 'tabela';
+            }
+        },
+        filters: {
+            saldo(time){
+                return time.gm - time.gs;
+            },
+            maiuscula(valor){
+                return valor.charAt(0).toUpperCase() + valor.slice(1)
             }
         }
     });
