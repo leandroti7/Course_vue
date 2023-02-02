@@ -20,6 +20,6 @@
     "@fortawesome/fontawesome-free": "^5.11.2",
     "bootstrap": "^4.4.1",
     "vue": "^2.6.10",
-    "vue-resource": "^1.5.1"
+    "vue-resource": "^1.5.3"
   }
 }
